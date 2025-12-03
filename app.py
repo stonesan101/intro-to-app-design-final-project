@@ -56,11 +56,40 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-# Routes
+def render_safe_markdown(text):
+    raw_html = md.markdown(text or '', extensions=['fenced_code', 'codehilite', 'tables'])
+
+    allowed_tags = list(bl.sanitizer.ALLOWED_TAGS) + [
+        'p', 'pre', 'code', 'span', 'div',
+        'h1', 'h2', 'h3', 'h4', 'h5',
+        'table', 'thead', 'tbody', 'tr', 'th', 'td',
+        'blockquote', 'hr', 'br', 'ul', 'ol', 'li', 'img'
+    ]
+
+    allowed_attributes = dict(bl.sanitizer.ALLOWED_ATTRIBUTES)
+    allowed_attributes.update({
+        '*': ['class'],
+        'a': ['href', 'title', 'rel'],
+        'img': ['src', 'alt', 'title']
+    })
+
+    cleaned = bl.clean(
+        raw_html,
+        tags=allowed_tags,
+        attributes=allowed_attributes,
+        protocols=['http', 'https', 'mailto'],
+        strip=True
+    )
+    return bl.linkify(cleaned)
+
+
 @app.route('/')
 def index():
     posts = Post.query.order_by(Post.created_at.desc()).all()
+    for post in posts:
+        post.rendered_content = render_safe_markdown(post.content)
     return render_template('index.html', posts=posts)
+
 
 
 @app.route('/register', methods=['GET', 'POST'])

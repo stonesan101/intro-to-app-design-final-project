@@ -27,7 +27,7 @@
                             href="{{ url_for('user_profile', user_id=post.author.id) }}">{{ post.author.username }}</a>
                         on {{ post.created_at.strftime('%B %d, %Y') }}
                     </div>
-                    <p>{{ post.content[:200] }}{% if post.content|length > 200 %}...{% endif %}</p>
+                    <p>{{ post.rendered_content[:200]|safe }}{% if post.content|length > 200 %}...{% endif %}</p>
                     <a href="{{ url_for('view_post', post_id=post.id) }}" class="btn">Read More</a>
                 </div>
             {% endfor %}
