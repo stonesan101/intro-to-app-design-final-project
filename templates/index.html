@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Flask Blog{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <h2>Welcome to Flask Blog</h2>
+        <p>A modern blogging platform built with Flask, SQLAlchemy, and Flask-Login.</p>
+        {% if current_user.is_authenticated %}
+            <p>Hello, <strong>{{ current_user.username }}</strong>! Ready to write something?</p>
+            <a href="{{ url_for('new_post') }}" class="btn">Create New Post</a>
+        {% else %}
+            <p>Please <a href="{{ url_for('login') }}">login</a> or <a href="{{ url_for('register') }}">register</a> to
+                start blogging!</p>
+        {% endif %}
+    </div>
+
+    <h2>Recent Posts</h2>
+    {% if posts %}
+        <div class="post-list">
+            {% for post in posts %}
+                <div class="post-preview">
+                    <h3><a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a></h3>
+                    <div class="post-meta">
+                        By <a
+                            href="{{ url_for('user_profile', user_id=post.author.id) }}">{{ post.author.username }}</a>
+                        on {{ post.created_at.strftime('%B %d, %Y') }}
+                    </div>
+                    <p>{{ post.content[:200] }}{% if post.content|length > 200 %}...{% endif %}</p>
+                    <a href="{{ url_for('view_post', post_id=post.id) }}" class="btn">Read More</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No posts yet. Be the first to create one!</p>
+    {% endif %}
+{% endblock %}

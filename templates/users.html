@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Users - Flask Blog{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <h2>All Users</h2>
+        <p>Browse our community of {{ users|length }} blogger{{ 's' if users|length != 1 else '' }}.</p>
+    </div>
+
+    <div class="user-list">
+        {% for user in users %}
+            <div class="user-card">
+                <h3><a href="{{ url_for('user_profile', user_id=user.id) }}">{{ user.username }}</a></h3>
+                <p>
+                    <strong>{{ user.posts|length }}</strong> post{{ 's' if user.posts|length != 1 else '' }}<br>
+                    <strong>{{ user.comments|length }}</strong>
+                    comment{{ 's' if user.comments|length != 1 else '' }}<br>
+                    Member since {{ user.created_at.strftime('%B %Y') }}
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
