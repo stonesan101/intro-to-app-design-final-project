@@ -172,34 +172,9 @@ def view_post(post_id):
     post = Post.query.get_or_404(post_id)
     comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.created_at.desc()).all()
 
-    # Render markdown to HTML
-    raw_html = md.markdown(post.content, extensions=['fenced_code', 'codehilite', 'tables'])
-
-    # Build allowed tags/attributes based on bleach defaults, plus extras needed for code/tables
-    allowed_tags = list(bl.sanitizer.ALLOWED_TAGS) + [
-        'p', 'pre', 'code', 'span', 'div',
-        'h1', 'h2', 'h3', 'h4', 'h5',
-        'table', 'thead', 'tbody', 'tr', 'th', 'td',
-        'blockquote', 'hr', 'br', 'ul', 'ol', 'li', 'img'
-    ]
-
-    allowed_attributes = dict(bl.sanitizer.ALLOWED_ATTRIBUTES)
-    # allow class for syntax highlighting and other styling, and safe attrs for links/images
-    allowed_attributes.update({
-        '*': ['class'],
-        'a': ['href', 'title', 'rel'],
-        'img': ['src', 'alt', 'title']
-    })
-
-    # Clean the HTML and convert plain URLs into safe links
-    cleaned = bl.clean(
-        raw_html,
-        tags=allowed_tags,
-        attributes=allowed_attributes,
-        protocols=['http', 'https', 'mailto'],
-        strip=True
-    )
-    safe_html = bl.linkify(cleaned)
+    safe_html  = render_safe_markdown(post.content)
+    for comment in comments:
+        comment.rendered_content = render_safe_markdown(comment.content)
 
     return render_template('view_post.html', post=post, comments=comments, rendered_content=safe_html)
 

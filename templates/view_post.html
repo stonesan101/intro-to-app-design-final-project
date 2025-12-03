@@ -64,7 +64,7 @@
                             </form>
                         {% endif %}
                     </div>
-                    <p>{{ comment.content }}</p>
+                    <p>{{ comment.rendered_content | safe }}</p>
                 </div>
             {% endfor %}
         {% else %}
