@@ -5,7 +5,8 @@
 {% block content %}
     <div class="card">
         <h2>Welcome to Flask Blog</h2>
-        <p>A modern blogging platform built with Flask, SQLAlchemy, and Flask-Login.</p>
+        <p>A modern blogging platform built with Flask, SQLAlchemy, Flask-Login, Werkzeug Security, Markdown, and
+            Bleach.</p>
         {% if current_user.is_authenticated %}
             <p>Hello, <strong>{{ current_user.username }}</strong>! Ready to write something?</p>
             <a href="{{ url_for('new_post') }}" class="btn">Create New Post</a>
