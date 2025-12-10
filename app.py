@@ -256,6 +256,8 @@ def users():
 def user_profile(user_id):
     user = User.query.get_or_404(user_id)
     posts = Post.query.filter_by(user_id=user_id).order_by(Post.created_at.desc()).all()
+    for post in posts:
+        post.rendered_content = render_safe_markdown(post.content)
     return render_template('user_profile.html', user=user, posts=posts)
 
 
@@ -342,3 +344,5 @@ Flask-Login strikes the perfect balance between simplicity and functionality. Fo
             print('Sample user created: username=demo, password=demo123')
 
     app.run(debug=True)
+
+
